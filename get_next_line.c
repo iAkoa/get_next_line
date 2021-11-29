@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pat <pat@student.42lyon.fr>                +#+  +:+       +#+        */
+/*   By: rmattheo <rmattheo@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/22 13:23:11 by rmattheo          #+#    #+#             */
-/*   Updated: 2021/11/29 16:24:38 by pat              ###   ########lyon.fr   */
+/*   Updated: 2021/11/29 17:47:57 by rmattheo         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,11 @@ static char	*add_line_realloc(char **buffer, int nb_letters)
 	int		j;
 	char	*temp;
 	char	*line;
-	
+
 	j = 0;
 	i = 0;
 	temp = *buffer;
+	// printf("taille de la ligne = %i\n", nb_letters + 1);
 	line = ft_calloc(1, nb_letters + 1);
 	if (!line)
 	{
@@ -34,6 +35,7 @@ static char	*add_line_realloc(char **buffer, int nb_letters)
 		line[j] = temp[j];
 		j++;
 	}
+	// printf("\n\nBUFFER ajustement = %i\n\n", ft_strlen(temp) - nb_letters + 1);
 	*buffer = ft_calloc(1, ft_strlen(temp) - nb_letters + 1);
 	if (!buffer)
 	{	
@@ -45,19 +47,26 @@ static char	*add_line_realloc(char **buffer, int nb_letters)
 		(*buffer)[i] = temp[nb_letters + i];
 		i++;
 	}
+	// printf("BUFFER de fonction = %s", *buffer);
 	free(temp);
+	if(*buffer[0] == '\0')
+	{
+		free(line);
+		return (NULL);
+	}
 	return (line);
 }
+
 static int	check_line(char *buffer)
 {
 	int		i;
 
 	i = 0;
-	if (!buffer)		
+	if (!buffer)
 		return (0);
 	while (buffer[i])
 	{
-		if (buffer[i] == '\n' || buffer[i+1] == '\0')
+		if (buffer[i] == '\n' || buffer[i + 1] == '\0')
 			return (i + 1);
 		i++;
 	}
@@ -72,7 +81,10 @@ static int	calloc_buffer(char **buffer)
 	i = 0;
 
 	temp = *buffer;
+	// printf("taille strlen = %i\n", ft_strlen(*buffer));
 	*buffer = ft_calloc(1, ft_strlen(*buffer) + BUFFER_SIZE + 1);
+	// printf("BUFFER = %s\n", *buffer);
+	// printf("taille calloc = %i\n", ft_strlen(*buffer) + BUFFER_SIZE + 1);
 	if (!buffer)
 	{
 		free(temp);
@@ -104,11 +116,14 @@ char	*found_line(char **buffer, int fd)
 		nb_letters = check_line(*buffer);
 		if (octet < 0)
 			return (NULL);
+
 		if (octet == 0)
-		{
-				if (!ft_strlen(*buffer))
-					return (NULL);
-				return (add_line_realloc(buffer, nb_letters));
+		{	
+			if (!ft_strlen(*buffer))
+			{
+				return (NULL);
+			}
+			return (add_line_realloc(buffer, nb_letters));
 		}
 		if (nb_letters > 0)
 			return (add_line_realloc(buffer, nb_letters));
@@ -129,7 +144,6 @@ char	*get_next_line(int fd)
 	line = found_line(&buffer, fd);
 	if (!line)
 	{
-		
 		free(buffer);
 		buffer = NULL;
 	}
@@ -140,17 +154,14 @@ char	*get_next_line(int fd)
 // int	main()
 // {
 // 	int fd;
+// 	char *line;
 	
 // 	fd = open ("file.txt", O_RDONLY);
-// 	printf("%s\n", get_next_line(fd));
-// 	printf("%s\n", get_next_line(fd));
-// 	printf("%s\n", get_next_line(fd));
-// 	printf("%s\n", get_next_line(fd));
-// 	printf("%s\n", get_next_line(fd));
-// 	printf("%s\n", get_next_line(fd));
-// 	printf("%s\n", get_next_line(fd));
-// 	printf("%s\n", get_next_line(fd));
-// 	printf("%s\n", get_next_line(fd));
-// 	printf("%s\n", get_next_line(fd));
+// 	while((line = get_next_line(fd)) != NULL)
+// 	{
+// 		printf("\nline  |  %s", line);
+// 		free(line);
+// 	}
+// 	free(line);
 // 	return (0);
 // }
