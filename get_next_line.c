@@ -6,7 +6,7 @@
 /*   By: rmattheo <rmattheo@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 17:53:03 by rmattheo          #+#    #+#             */
-/*   Updated: 2021/12/15 17:53:05 by rmattheo         ###   ########lyon.fr   */
+/*   Updated: 2021/12/15 19:08:02 by rmattheo         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,26 +80,26 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (d - i);
 }
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+char	*ft_substr(char const *buffer, unsigned int start, size_t len)
 {
-	char	*d;
+	char	*lines;
 	size_t	i;
 
-	if (!s && len > 0)
+	if (!buffer && len > 0)
 		return (NULL);
-	i = ft_strlen(&s[start]);
-	if (!s)
+	if (!buffer)
 		return (NULL);
-	if (ft_strlen(s) < start)
+	i = ft_strlen(&buffer[start]);
+	if (ft_strlen(buffer) < start)
 		return (ft_calloc(1, 1));
-	if (ft_strlen(s) < len)
-		len = ft_strlen(s);
-	d = malloc((char)len + 1);
-	if (!d)
+	if (ft_strlen(buffer) < len)
+		len = ft_strlen(buffer);
+	lines = malloc((char)len + 1);
+	if (!lines)
 		return (NULL);
-	d[len] = 0;
-	d = ft_memcpy(d, &s[start], len);
-	return (d);
+	lines[len] = 0;
+	lines = ft_memcpy(lines, &buffer[start], len);
+	return (lines);
 }
 
 void	ft_read(int fd, char **lines, char *buffer)
@@ -110,8 +110,11 @@ void	ft_read(int fd, char **lines, char *buffer)
 	if (!*lines)
 	{
 		i = read(fd, buffer, BUFFER_SIZE);
+	printf ("<<<<I>>>>%i\n", i);
 		buffer[i] = '\0';
+	printf ("\nbuffer : %s\n", buffer);
 		*lines = ft_substr(buffer, 0, BUFFER_SIZE);
+	printf ("\nline : %s\n", *lines);
 	}
 	if (!ft_strchr(*lines, '\n'))
 	{
@@ -134,18 +137,19 @@ char	*ft_process(char **lines)
 	char	*temp;
 	char	*ret;
 	int		i;
-	int 	j;
-
+	int		j;
 	if (!*lines)
 		return (NULL);
+	printf ("\n<<<<<line>>>>> : %s\n", *lines);
 	if (!ft_strchr(*lines, '\n'))
 	{
-		if (*lines[0] == '\0')
+		if (*lines && *lines[0] == '\0')
 		{
 			free(*lines);
 			*lines = NULL;
 			return (NULL);
 		}
+
 		ret = ft_substr(*lines, 0, ft_strlen(*lines));
 		free (*lines);
 		return (ret);
@@ -159,12 +163,11 @@ char	*ft_process(char **lines)
 	return (ret);
 }
 
-
 char	*get_next_line(int fd)
 {
 	char		*buffer;
 	static char	*lines;
-	
+
 	if (BUFFER_SIZE < 1)
 	{
 		return (NULL);
@@ -181,7 +184,7 @@ int	main()
 	fd = open ("file.txt", O_RDONLY);
 	while((line = get_next_line(fd)))
 	{
-		printf("line  |  %s\n", line);
+		printf(">>>>>>  |  %s\n", line);
 		free(line);
 	}
 	close (fd);
