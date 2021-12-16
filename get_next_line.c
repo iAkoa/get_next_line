@@ -3,63 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmattheo <rmattheo@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: pat <pat@student.42lyon.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 17:53:03 by rmattheo          #+#    #+#             */
-/*   Updated: 2021/12/15 19:08:02 by rmattheo         ###   ########lyon.fr   */
+/*   Updated: 2021/12/16 15:59:36 by pat              ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <stdio.h>
-
-char	*ft_strchr(const char *str, int c)
-{
-	while (*str && *str != (char)c)
-		str++;
-	if (*str == (char)c || c == 0)
-		return ((char *)str);
-	return (NULL);
-}
-
-int	ft_strlen(const char *s)
-{
-	int	i;
-
-	if (!s)
-		return (0);
-	i = 0;
-	while (s[i])
-		i++;
-	return (i);
-}
-void	*ft_memcpy(void *dest, const void *src, int n)
-{
-	size_t	i;
-
-	if (!src && !dest)
-		return (NULL);
-	i = n;
-	while (n--)
-		*(unsigned char *)dest++ = *(unsigned char *)src++;
-	return (dest - i);
-}
-void	ft_bzero(void *s, size_t n)
-{
-	while (n-- > 0)
-		*(unsigned char *)s++ = 0;
-}
-
-void	*ft_calloc(size_t count, size_t size)
-{
-	void	*s;
-
-	s = malloc(count * size);
-	if (!s)
-		return (NULL);
-	ft_bzero(s, (count * size));
-	return (s);
-}
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
@@ -90,9 +42,9 @@ char	*ft_substr(char const *buffer, unsigned int start, size_t len)
 	if (!buffer)
 		return (NULL);
 	i = ft_strlen(&buffer[start]);
-	if (ft_strlen(buffer) < start)
+	if (ft_strlen(buffer) < (int)start)
 		return (ft_calloc(1, 1));
-	if (ft_strlen(buffer) < len)
+	if (ft_strlen(buffer) < (int)len)
 		len = ft_strlen(buffer);
 	lines = malloc((char)len + 1);
 	if (!lines)
@@ -106,24 +58,26 @@ void	ft_read(int fd, char **lines, char *buffer)
 {
 	char	*temp;
 	int		i;
-
 	if (!*lines)
 	{
 		i = read(fd, buffer, BUFFER_SIZE);
-	printf ("<<<<I>>>>%i\n", i);
 		buffer[i] = '\0';
-	printf ("\nbuffer : %s\n", buffer);
 		*lines = ft_substr(buffer, 0, BUFFER_SIZE);
-	printf ("\nline : %s\n", *lines);
 	}
 	if (!ft_strchr(*lines, '\n'))
 	{
 		i = read(fd, buffer, BUFFER_SIZE);
+		if (i == 0)
+		{
+			free(*lines);
+			*lines = NULL;
+		}
 		while (i > 0 && !ft_strchr(*lines, '\n'))
 		{
 			buffer[i] = '\0';
 			temp = *lines;
 			*lines = ft_strjoin(*lines, buffer);
+			// printf ("/////lines1//////%s\n", *lines);
 			free(temp);
 			if (ft_strchr(*lines, '\n'))
 				break ;
@@ -140,54 +94,56 @@ char	*ft_process(char **lines)
 	int		j;
 	if (!*lines)
 		return (NULL);
-	printf ("\n<<<<<line>>>>> : %s\n", *lines);
+	// printf ("/////lines2//////%s", *lines);
 	if (!ft_strchr(*lines, '\n'))
 	{
-		if (*lines && *lines[0] == '\0')
+		// printf ("/////lines3//////%s\n", *lines);
+		ret = ft_substr(*lines, 0, ft_strlen(*lines));
+		// printf ("/////ret//////%s\n", ret);
+		if (!ret)
+			return (NULL);
+		if (!*lines)
 		{
 			free(*lines);
 			*lines = NULL;
 			return (NULL);
 		}
-
-		ret = ft_substr(*lines, 0, ft_strlen(*lines));
-		free (*lines);
+		// printf ("<<<<<<<ret>>>>>>%s\n", ret);
 		return (ret);
 	}
 	i = ft_strlen(*lines);
 	j = ft_strlen(ft_strchr(*lines, '\n'));
-	ret = ft_substr(*lines, 0, i - j);
+	ret = ft_substr(*lines, 0, i - j + 1);;
 	temp = *lines;
 	*lines = ft_substr(*lines, i - j + 1, j);
+	// printf ("/////lines//////%s\n", *lines);
 	free(temp);
 	return (ret);
 }
 
 char	*get_next_line(int fd)
 {
-	char		*buffer;
+	char		buffer[BUFFER_SIZE + 1];
 	static char	*lines;
 
-	if (BUFFER_SIZE < 1)
-	{
+	// printf("==========> %p\n", lines);
+	if (BUFFER_SIZE < 1 || read(fd, buffer, 0) == -1)
 		return (NULL);
-	}
 	ft_read(fd, &lines, buffer);
 	return (ft_process(&lines));
 }
 
-int	main()
-{
-	int		fd;
-	char	*line;
-
-	fd = open ("file.txt", O_RDONLY);
-	while((line = get_next_line(fd)))
-	{
-		printf(">>>>>>  |  %s\n", line);
-		free(line);
-	}
-	close (fd);
-	free(line);
-	return (0);
-}
+// int	main()
+// {
+// 	int		fd;
+// 	char	*line;
+// 	fd = open ("file.txt", O_RDONLY);
+// 	while((line = get_next_line(fd)))
+// 	{
+// 		printf(">>>>>>  |  %s", line);
+// 		free(line);
+// 	}
+// 	close (fd);
+// 	free(line);
+// 	return (0);
+// }

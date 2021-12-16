@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmattheo <rmattheo@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: pat <pat@student.42lyon.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/22 13:21:07 by rmattheo          #+#    #+#             */
-/*   Updated: 2021/12/02 17:09:12 by rmattheo         ###   ########lyon.fr   */
+/*   Updated: 2021/12/16 15:53:12 by pat              ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,19 @@
 # include <stdlib.h>
 # include <fcntl.h>
 
-typedef struct s_struct
-{
-	int		pos;
-	char	*data;
+char	*ft_strjoin(char const *s1, char const *s2);
+void	*ft_calloc(size_t count, size_t size);
+void	*ft_memcpy(void *dest, const void *src, int n);
+int		ft_strlen(const char *s);
+char	*ft_strchr(const char *str, int c);
+char	*ft_substr(char const *buffer, unsigned int start, size_t len);
+void	ft_read(int fd, char **lines, char *buffer);
+char	*ft_process(char **lines);
+char	*get_next_line(int fd);
 
-}			t_struct;
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 8
+#  define BUFFER_SIZE 1
 # endif
 
 #endif
