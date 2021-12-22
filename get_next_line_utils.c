@@ -6,19 +6,27 @@
 /*   By: pat <pat@student.42lyon.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 00:19:02 by pat               #+#    #+#             */
-/*   Updated: 2021/12/15 22:17:57 by pat              ###   ########lyon.fr   */
+/*   Updated: 2021/12/20 23:38:05 by pat              ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <stdio.h>
 
-char	*ft_strchr(const char *str, int c)
+int	ft_strchr(char *str, int c)
 {
-	while (*str && *str != (char)c)
-		str++;
-	if (*str == (char)c || c == 0)
-		return ((char *)str);
-	return (NULL);
+	int	i;
+
+	i = 0;
+	if(!str[i])
+		return (0);
+	while (str[i] && str[i] != (char)c)
+		i++;
+	if (str[i] == (char)c || c == 0)
+	{
+		return (i);
+	}
+	return (0);
 }
 
 int	ft_strlen(const char *s)
