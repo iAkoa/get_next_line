@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pat <pat@student.42lyon.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/13 16:08:28 by tdeville          #+#    #+#             */
-/*   Updated: 2022/01/13 02:39:11 by pat              ###   ########lyon.fr   */
+/*   Created: 2021/11/17 16:09:52 by tdeville          #+#    #+#             */
+/*   Updated: 2022/01/13 17:43:51 by pat              ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 static void	get_line(char **line, int fd, char *buffer)
 {
@@ -30,7 +30,7 @@ static void	get_line(char **line, int fd, char *buffer)
 			free(tmp);
 		}
 		if (ft_strchr(buffer, '\n'))
-			break ;
+			break;
 		r = read(fd, buffer, BUFFER_SIZE);
 	}
 }
@@ -40,7 +40,6 @@ static char	*parse_line(char **line)
 	int		j;
 	char	*tmp;
 	char	*mem;
-
 	if (!*line)
 		return (NULL);
 	if (!ft_strchr(*line, '\n'))
@@ -66,14 +65,16 @@ static char	*parse_line(char **line)
 
 char	*get_next_line(int fd)
 {
-	static char	*line;
+	static char	*line[OPEN_MAX + 1];
 	char		*str;
 	char		buffer[BUFFER_SIZE + 1];
 
 	if (read(fd, buffer, BUFFER_SIZE == -1) || BUFFER_SIZE < 0)
 		return (NULL);
-	if(!(ft_strchr(line, '\n')))
-		get_line(&line, fd, buffer);
-	str = parse_line(&line);
+	if (!(ft_strchr(line[fd], '\n')))
+	{
+		get_line(&line[fd], fd, buffer);
+	}
+	str = parse_line(&line[fd]);
 	return (str);
 }
